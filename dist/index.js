@@ -27,6 +27,10 @@ const io = new socket_io_1.Server(server, { cors: { origin: "*" } });
 const lobbies = {};
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
+    socket.on("disconnect", reason => {
+        const lobbyId = Array.from(socket.rooms)[1];
+        io.to(lobbyId).emit("user-disconnect", socket.id);
+    });
     // Allow a user to create a new game lobby
     socket.on("create-lobby", (armyList, callback) => {
         // TODO: Generate short random ID
@@ -55,7 +59,7 @@ io.on('connection', (socket) => {
         io.to(lobbyId).emit("user-joined", user);
         // Add this user to the lobby
         socket.join(lobbyId);
-        lobby.users.push();
+        lobby.users.push(user);
         // Let the user know they joined successfully
         callback(lobby);
     });
