@@ -37,6 +37,10 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} disconnected from ${lobbyId}`);
     const lobby = lobbies[lobbyId];
     lobby.users = lobby.users.filter(x => x.id !== socket.id);
+    // Clean up lobby once the last user has left
+    if (lobby.users.length === 0) {
+      delete lobbies[lobbyId];
+    }
     io.to(lobbyId).emit("user-disconnect", socket.id);
   });
 
