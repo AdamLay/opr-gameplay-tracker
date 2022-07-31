@@ -31,7 +31,8 @@ io.on('connection', (socket) => {
         // Create a new game lobby
         lobbies[lobbyId] = {
             id: lobbyId,
-            users: [{ id: socket.id, list: armyList }]
+            users: [{ id: socket.id, list: armyList }],
+            actions: []
         };
         // Join this user to a new room
         socket.join(lobbyId);
@@ -56,7 +57,9 @@ io.on('connection', (socket) => {
         callback(lobby);
     });
     socket.on("modify-unit", (action) => {
-        const room = Array.from(socket.rooms)[1];
-        io.to(room).emit("modify-unit", action);
+        const lobbyId = Array.from(socket.rooms)[1];
+        const lobby = lobbies[lobbyId];
+        lobby.actions.push(action);
+        io.to(lobbyId).emit("modify-unit", action);
     });
 });
