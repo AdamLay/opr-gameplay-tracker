@@ -34,6 +34,9 @@ io.on('connection', (socket) => {
 
   socket.on("disconnecting", reason => {
     const lobbyId = Array.from(socket.rooms)[1];
+    // user might not have joined a lobby yet...
+    if (!lobbyId)
+      return;
     console.log(`User ${socket.id} disconnected from ${lobbyId}`);
     const lobby = lobbies[lobbyId];
     lobby.users = lobby.users.filter(x => x.id !== socket.id);
@@ -41,6 +44,8 @@ io.on('connection', (socket) => {
     if (lobby.users.length === 0) {
       delete lobbies[lobbyId];
     }
+
+    // Let other users know about the disconnect
     io.to(lobbyId).emit("user-disconnect", socket.id);
   });
 
