@@ -27,8 +27,11 @@ const io = new socket_io_1.Server(server, { cors: { origin: "*" } });
 const lobbies = {};
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
-    socket.on("disconnect", reason => {
+    socket.on("disconnecting", reason => {
         const lobbyId = Array.from(socket.rooms)[1];
+        console.log(`User ${socket.id} disconnected from ${lobbyId}`);
+        const lobby = lobbies[lobbyId];
+        lobby.users = lobby.users.filter(x => x.id !== socket.id);
         io.to(lobbyId).emit("user-disconnect", socket.id);
     });
     // Allow a user to create a new game lobby
