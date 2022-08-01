@@ -50,13 +50,13 @@ io.on('connection', (socket) => {
   });
 
   // Allow a user to create a new game lobby
-  socket.on("create-lobby", (armyList, callback) => {
+  socket.on("create-lobby", (userId, armyList, callback) => {
     // TODO: Generate short random ID
     const lobbyId = nanoid(6);// socket.id;
     // Create a new game lobby
     lobbies[lobbyId] = {
       id: lobbyId,
-      users: [{ id: socket.id, list: armyList }],
+      users: [{ id: userId, list: armyList }],
       actions: []
     };
     // Join this user to a new room
@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on("join-lobby", (lobbyId, armyList, callback) => {
+  socket.on("join-lobby", (userId, lobbyId, armyList, callback) => {
 
     const lobby = lobbies[lobbyId];
     if (!lobby) {
@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    const user = { id: socket.id, list: armyList };
+    const user = { id: userId, list: armyList };
     // Broadcast to other users in the lobby that someone joined
     io.to(lobbyId).emit("user-joined", user);
     // Add this user to the lobby
