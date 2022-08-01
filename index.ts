@@ -62,9 +62,10 @@ io.on('connection', (socket) => {
     // Join this user to a new room
     socket.join(lobbyId);
     // Let the user know which room/lobby they have joined
-    callback({
-      lobbyId
-    });
+    if (callback)
+      callback({
+        lobbyId
+      });
   });
 
   socket.on("join-lobby", (userId, lobbyId, armyList, callback) => {
@@ -82,7 +83,8 @@ io.on('connection', (socket) => {
     socket.join(lobbyId);
     lobby.users.push(user);
     // Let the user know they joined successfully
-    callback(lobby);
+    if (callback)
+      callback(lobby);
   });
 
   socket.on("modify-unit", (action) => {
